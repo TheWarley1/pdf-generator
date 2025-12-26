@@ -1,6 +1,5 @@
 import streamlit as st
 from fpdf import FPDF
-from io import BytesIO
 
 def clean_text(text):
     # This replaces any character that isn't compatible with 'latin-1' (standard PDF font)
@@ -26,31 +25,34 @@ pdf_filename = st.text_input("PDF filename (without .pdf extension):", value="ou
 # Convert button
 if st.button("Convert to PDF"):
     if user_text:
-        # Create instance of FPDF class
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=font_size)
+        try:
+            # Create instance of FPDF class
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=font_size)
+            
+            # Split the text into lines
+            content = user_text.split('\n')
+            
+            # Write content to PDF
+            for line in content:
+                # Handle long lines by using multi_cell instead of cell
+                pdf.multi_cell(190, 10, txt=clean_text(line), align='L')
+            
+            # Save PDF to bytes buffer
+            pdf_output = pdf.output()
+            
+            # Create download button
+            st.download_button(
+                label="📥 Download PDF",
+                data=pdf_output,
+                file_name=f"{pdf_filename}.pdf",
+                mime="application/pdf"
+            )
+            
+            st.success("✅ PDF generated successfully! Click the button above to download.")
         
-        # Split the text into lines
-        content = user_text.split('\n')
-        
-        # Write content to PDF
-        for line in content:
-            # Handle long lines by using multi_cell instead of cell
-            pdf.multi_cell(190, 10, txt=clean_text(line), align='L')
-        
-        # Save PDF to bytes buffer
-        pdf_output = pdf.output()
-        
-        # Create download button
-        st.download_button(
-            label="Download PDF",
-            data=pdf_output,
-            file_name=f"{pdf_filename}.pdf",
-            mime="application/pdf"
-        )
-        
-        st.success("PDF generated successfully! Click the button above to download.")
+        except Exception as e:
+            st.error(f"An error occurred while generating the PDF: {str(e)}")
     else:
-        st.warning("Please enter some text first!")
-
+        st.warning("⚠️ Please enter some text first!")
