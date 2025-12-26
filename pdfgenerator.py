@@ -2,6 +2,11 @@ import streamlit as st
 from fpdf import FPDF
 from io import BytesIO
 
+def clean_text(text):
+    # This replaces any character that isn't compatible with 'latin-1' (standard PDF font)
+    return text.encode('latin-1', 'replace').decode('latin-1')
+
+
 st.title("Text to PDF Converter")
 st.write("Enter your text below and convert it to a PDF file")
 
@@ -32,7 +37,7 @@ if st.button("Convert to PDF"):
         # Write content to PDF
         for line in content:
             # Handle long lines by using multi_cell instead of cell
-            pdf.multi_cell(190, 10, txt=line, align='L')
+            pdf.multi_cell(190, 10, txt=clean_text(line), align='L')
         
         # Save PDF to bytes buffer
         pdf_output = pdf.output(dest='S').encode('latin-1')
