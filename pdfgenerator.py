@@ -32,7 +32,7 @@ if st.button("Convert to PDF"):
         # Write content to PDF
         for line in content:
             # Handle long lines by using multi_cell instead of cell
-            pdf.multi_cell(0, 10, txt=line, align='L')
+            pdf.multi_cell(190, 10, txt=line, align='L')
         
         # Save PDF to bytes buffer
         pdf_output = pdf.output(dest='S').encode('latin-1')
