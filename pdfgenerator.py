@@ -40,7 +40,7 @@ if st.button("Convert to PDF"):
             pdf.multi_cell(190, 10, txt=clean_text(line), align='L')
         
         # Save PDF to bytes buffer
-        pdf_output = pdf.output(dest='S').encode('latin-1')
+        pdf_output = pdf.output()
         
         # Create download button
         st.download_button(
